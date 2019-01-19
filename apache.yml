@@ -72,6 +72,7 @@
         volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
+        command: ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
         networks:
           - name: plexguide
             aliases:
