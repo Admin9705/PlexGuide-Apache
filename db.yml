@@ -12,7 +12,7 @@
 
     # WP CORE (MANDATORY) #########################################################
     - name: 'Including PG Press Core'
-      include_tasks: '/opt/pgpress/pgpresscore.yml'
+      include_tasks: '/opt/pgpress/pgapachecore.yml'
 
     - name: 'Set Known Facts'
       set_fact:
