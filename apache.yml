@@ -17,10 +17,10 @@
     # FACTS #######################################################################
     - name: 'Set Known Facts'
       set_fact:
-        pgrole: 'wp-{{wp_id.stdout}}'
+        pgrole: 'ap-{{ap_id.stdout}}'
         intport: '80'
         extport: '80'
-        image: 'wordpress'
+        image: 'geerlingguy/php-apache:latest'
 
     # CORE (MANDATORY) ############################################################
     - name: 'Register TLD'
@@ -34,12 +34,12 @@
     - name: 'If Fact Matches - Enable TLD'
       set_fact:
         tldset: '{{domain.stdout}}'
-      when: 'toplevel.stdout == wp_id.stdout'
+      when: 'toplevel.stdout == ap_id.stdout'
 
     - name: 'If Fact Does Not Match - Ignore TLD'
       set_fact:
         tldset: ''
-      when: 'not toplevel.stdout == wp_id.stdout'
+      when: 'not toplevel.stdout == ap_id.stdout'
 
     # LABELS ######################################################################
     - name: 'Adding Traefik'
@@ -48,13 +48,13 @@
           traefik.enable: 'true'
           traefik.backend: "{{pgrole}}"
           traefik.port: '80'
-          traefik.frontend.rule: 'Host:{{wp_id.stdout}}.{{domain.stdout}},{{tldset}}'
+          traefik.frontend.rule: 'Host:{{ap_id.stdout}}.{{domain.stdout}},{{tldset}}'
           traefik.docker.network: 'plexguide'
 
     - name: 'Setting PG Volumes'
       set_fact:
         pg_volumes:
-          - /opt/appdata/wordpress/{{wp_id.stdout}}/{{wp_id.stdout}}:/var/www/html
+          - /opt/appdata/wordpress/{{ap_id.stdout}}/{{ap_id.stdout}}:/var/www/html
           - /etc/localtime:/etc/localtime:ro
 
     - name: 'Setting PG ENV'
@@ -62,7 +62,6 @@
         pg_env:
           PUID: 1000
           PGID: 1000
-          WORDPRESS_DB_PASSWORD: "mYsupERbigPas2WorD"
 
     # MAIN DEPLOYMENT #############################################################
     - name: 'Deploying {{pgrole}}'
@@ -70,14 +69,12 @@
         name: '{{pgrole}}'
         image: '{{image}}'
         pull: yes
-        links:
-          - "wpdb-{{wp_id.stdout}}:mysql"
         volumes: '{{pg_volumes}}'
         env: '{{pg_env}}'
         restart_policy: unless-stopped
         networks:
           - name: plexguide
             aliases:
-              - "wp-{{wp_id.stdout}}"
+              - "ap-{{ap_id.stdout}}"
         state: started
         labels: '{{pg_labels}}'

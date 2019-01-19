@@ -6,6 +6,6 @@
 # GNU:        General Public License v3.0
 ################################################################################
 ---
-- name: WordPress ID
-  shell: "cat /tmp/wp_id"
-  register: wp_id
+- name: Apache ID
+  shell: "cat /tmp/ap_id"
+  register: ap_id

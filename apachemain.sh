@@ -17,17 +17,17 @@ echo good > /var/plexguide/auth.bypass
 
 # Checks to That RClone Works
 file=$()
-if [ ! -d "/mnt/gdrive/plexguide/backup/wordpress" ]; then
+if [ ! -d "/mnt/gdrive/plexguide/backup/apache" ]; then
 
   # Makes a Test Directory for Checks
-  rclone mkdir --config /opt/appdata/plexguide/rclone.conf gdrive:/plexguide/backup/wordpress
-  rclonecheck=$(rclone lsd --config /opt/appdata/plexguide/rclone.conf gdrive:/plexguide/backup/ | grep wordpress)
+  rclone mkdir --config /opt/appdata/plexguide/rclone.conf gdrive:/plexguide/backup/apache
+  rclonecheck=$(rclone lsd --config /opt/appdata/plexguide/rclone.conf gdrive:/plexguide/backup/ | grep apache)
   sleep 1
 
     # Conducts a Check Again; if fails; then exits
     if [ "$rclonecheck" == "" ]; then
       echo
-      echo "💬  Unable to find - /mnt/gdrive/plexguide/backup/wordpress"
+      echo "💬  Unable to find - /mnt/gdrive/plexguide/backup/apache"
       echo ""
       echo "1. Did You Deploy PGClone?"
       echo "2. Test by typing ~ ls -la /mnt/gdrive"
@@ -44,16 +44,16 @@ tld=$(cat /var/plexguide/tld.program)
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press                            📓 Reference: pgpress.plexguide.com
+🚀 PG Apache                            📓 Reference: pgapache.plexguide.com
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💬 PG Press is a Mass WordPress Management System managed by PlexGuide!
+💬 PG Apache is a Mass Apache Management System managed by PlexGuide!
 
-[1] WordPress: Deploy a New Site
-[2] WordPress: View Deployed Sites
-[3] WordPress: Backup & Restore
-[4] WordPress: Set a Top Level Domain - [$tld]
-[5] WordPress: Destroy a Website
+[1] Apache: Deploy a New Site
+[2] Apache: View Deployed Sites
+[3] Apache: Backup & Restore
+[4] Apache: Set a Top Level Domain - [$tld]
+[5] Apache: Destroy a Website
 [Z] Exit
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -69,7 +69,7 @@ case $typed in
         viewcontainers
         mainbanner ;;
     3 )
-        bash /opt/pgpress/pgvault/pgvault.sh
+        bash /opt/pgapache/pgvault/pgvault.sh
         mainbanner ;;
     4 )
         tldportion
@@ -91,10 +91,10 @@ deploywp () {
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Setting a WordPress ID / SubDomain
+🚀 Setting a Apache ID / SubDomain
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Type the name for the subdomain wordpress instance. Instance can later be
+Type the name for the subdomain apache instance. Instance can later be
 turned to operate at the TLD (Top Level Domain). Keep it all lowercase and
 with no breaks in space.
 
@@ -109,15 +109,15 @@ if [ "$subdomain" == "" ]; then deploywp; fi
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 Deploying WordPress Instance: $subdomain
+🚀 Deploying Apache Instance: $subdomain
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 EOF
 
-echo "$subdomain" > /tmp/wp_id
+echo "$subdomain" > /tmp/ap_id
 
-ansible-playbook /opt/pgpress/db.yml
-ansible-playbook /opt/pgpress/wordpress.yml
+ansible-playbook /opt/pgapache/db.yml
+ansible-playbook /opt/pgapache/apache.yml
 
 wpdomain=$(cat /var/plexguide/server.domain)
 
@@ -159,7 +159,7 @@ containerlist=$(cat /var/plexguide/tmp.format.containerlist)
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press                            📓 Reference: pgpress.plexguide.com
+🚀 PG Apache                            📓 Reference: pgapache.plexguide.com
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📂 WP Containers Detected Running
@@ -199,7 +199,7 @@ containerlist=$(cat /var/plexguide/tmp.format.containerlist)
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press                            📓 Reference: pgpress.plexguide.com
+🚀 PG Apache                            📓 Reference: pgapache.plexguide.com
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📂 WP Containers Detected Running
@@ -219,13 +219,13 @@ destroycheck=$(echo $containerlist | grep "$typed")
 
 if [[ "$destroycheck" == "" ]]; then
 echo
-read -p '💬 WordPress Contanier Does Not Exist! | Press [ENTER] ' typed < /dev/tty
+read -p '💬 Apache Contanier Does Not Exist! | Press [ENTER] ' typed < /dev/tty
 destroycontainers; fi
 
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press - Destroying the WordPress Instance - $typed
+🚀 PG Apache - Destroying the Apache Instance - $typed
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
 
@@ -233,10 +233,10 @@ docker stop "wp-${typed}/mysql"
 docker stop "wp-${typed}"
 docker rm "wp-${typed}/mysql"
 docker rm "wp-${typed}"
-rm -rf "/opt/appdata/wordpress/${typed}"
+rm -rf "/opt/appdata/apache/${typed}"
 
 echo
-read -p "💬 WordPress Instance $typed Removed! | Press [ENTER] " abc < /dev/tty
+read -p "💬 Apache Instance $typed Removed! | Press [ENTER] " abc < /dev/tty
 mainbanner
 }
 
@@ -266,7 +266,7 @@ containerlist=$(cat /var/plexguide/tmp.format.containerlist)
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press - Set Top Level Domain     📓 Reference: pgpress.plexguide.com
+🚀 PG Apache - Set Top Level Domain   📓 Reference: pgapache.plexguide.com
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📂 WP Containers Detected Running
@@ -279,7 +279,7 @@ EOF
 tee <<-EOF
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚀 PG Press - Set Top Level Domain     📓 Reference: pgpress.plexguide.com
+🚀 PG Apache - Set Top Level Domain   📓 Reference: pgapache.plexguide.com
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📂 WP Containers Detected Running
@@ -290,7 +290,7 @@ $containerlist
 💬 Quitting? TYPE > exit
 EOF
 
-read -p '💪 Type WordPress Site for Top Level Domain | Press [ENTER]: ' typed < /dev/tty
+read -p '💪 Type Apache Site for Top Level Domain | Press [ENTER]: ' typed < /dev/tty
 
 if [[ "$typed" == "exit" ]]; then mainbanner; fi
 
@@ -298,7 +298,7 @@ destroycheck=$(echo $containerlist | grep "$typed")
 
 if [[ "$destroycheck" == "" ]]; then
 echo
-read -p '💬 WordPress Contanier Does Not Exist! | Press [ENTER] ' typed < /dev/tty
+read -p '💬 Apache Contanier Does Not Exist! | Press [ENTER] ' typed < /dev/tty
 tldportion; fi
 
 tee <<-EOF
@@ -333,21 +333,21 @@ if [[ "$old" != "$new" && "$old" != "NOT-SET" ]]; then
 
   if [[ "$tldtype" == "standard" ]]; then
     ansible-playbook /opt/plexguide/containers/$old.yml
-  elif [[ "$tldtype" == "wordpress" ]]; then
-    echo "$old" > /tmp/wp_id
-    ansible-playbook /opt/pgpress/wordpress.yml
-    echo "$typed" > /tmp/wp_id
+  elif [[ "$tldtype" == "apache" ]]; then
+    echo "$old" > /tmp/ap_id
+    ansible-playbook /opt/pgapache/apache.yml
+    echo "$typed" > /tmp/ap_id
   fi
 fi
 
 # Repair this to Recall Port for It
-echo "$new" > /tmp/wp_id
-#echo "$port" > /tmp/wp_port
+echo "$new" > /tmp/ap_id
+#echo "$port" > /tmp/ap_port
 
-ansible-playbook /opt/pgpress/wordpress.yml
+ansible-playbook /opt/pgapache/apache.yml
 
-# Notifies that TLD is WordPress
-echo "wordpress" > /var/plexguide/tld.type
+# Notifies that TLD is Apache
+echo "apache" > /var/plexguide/tld.type
 
 tee <<-EOF
 
