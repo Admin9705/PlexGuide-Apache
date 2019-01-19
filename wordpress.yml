@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# Title:      PlexGuide (Reference Title File)
+# Author(s):  Admin9705
+# URL:        https://plexguide.com - http://github.plexguide.com
+# GNU:        General Public License v3.0
+################################################################################
+---
+- hosts: localhost
+  gather_facts: false
+  tasks:
+
+    # WP CORE (MANDATORY) #########################################################
+    - name: 'Including PG Press Core'
+      include_tasks: '/opt/pgpress/pgpresscore.yml'
+
+    # FACTS #######################################################################
+    - name: 'Set Known Facts'
+      set_fact:
+        pgrole: 'wp-{{wp_id.stdout}}'
+        intport: '80'
+        extport: '80'
+        image: 'wordpress'
+
+    # CORE (MANDATORY) ############################################################
+    - name: 'Register TLD'
+      shell: 'cat /var/plexguide/tld.program'
+      register: toplevel
+
+    - name: Register Domain
+      shell: 'cat /var/plexguide/server.domain'
+      register: domain
+
+    - name: 'If Fact Matches - Enable TLD'
+      set_fact:
+        tldset: '{{domain.stdout}}'
+      when: 'toplevel.stdout == wp_id.stdout'
+
+    - name: 'If Fact Does Not Match - Ignore TLD'
+      set_fact:
+        tldset: ''
+      when: 'not toplevel.stdout == wp_id.stdout'
+
+    # LABELS ######################################################################
+    - name: 'Adding Traefik'
+      set_fact:
+        pg_labels:
+          traefik.enable: 'true'
+          traefik.backend: "{{pgrole}}"
+          traefik.port: '80'
+          traefik.frontend.rule: 'Host:{{wp_id.stdout}}.{{domain.stdout}},{{tldset}}'
+          traefik.docker.network: 'plexguide'
+
+    - name: 'Setting PG Volumes'
+      set_fact:
+        pg_volumes:
+          - /opt/appdata/wordpress/{{wp_id.stdout}}/{{wp_id.stdout}}:/var/www/html
+          - /etc/localtime:/etc/localtime:ro
+
+    - name: 'Setting PG ENV'
+      set_fact:
+        pg_env:
+          PUID: 1000
+          PGID: 1000
+          WORDPRESS_DB_PASSWORD: "mYsupERbigPas2WorD"
+
+    # MAIN DEPLOYMENT #############################################################
+    - name: 'Deploying {{pgrole}}'
+      docker_container:
+        name: '{{pgrole}}'
+        image: '{{image}}'
+        pull: yes
+        links:
+          - "wpdb-{{wp_id.stdout}}:mysql"
+        volumes: '{{pg_volumes}}'
+        env: '{{pg_env}}'
+        restart_policy: unless-stopped
+        networks:
+          - name: plexguide
+            aliases:
+              - "wp-{{wp_id.stdout}}"
+        state: started
+        labels: '{{pg_labels}}'
